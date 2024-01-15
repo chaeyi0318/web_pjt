@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Blog</title>
+</head>
+<script>
+    const href = location.href;
+    const queryString = href.substring(href.indexOf("?") + 1)
+
+    function login() {
+        let userId = $('#userId').val();
+        let password = $('#password').val();
+
+        if (userId == ' ') {
+            alert('Id를 입력해주세요');
+            return;
+        } else if (password == ' ') {
+            alert('비밀번호를 입력해주세요');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: `/api/user/login`,
+            contentType: "application/json",
+            data: JSON.stringify({userId: userId, password: password}),
+            success: function (response, status, xhr) {
+                if (response === 'success') {
+                    let his = window.location.host;
+                    let url = host + '/api/main';
+
+                    document.cookie = 'Authorization' + '=' + xhr.getResponseHeader('Authorization') + ';path=/';
+                    window.location.href = 'http://' + url;
+                } else {
+                    alert('로그인에 실패하였습니다.')
+                    window.location.reload();
+                }
+            }
+        })
+    }
+</script>
+<body>
+<div class="header" style="position: relative">
+    <div id="login-false">
+        <a id="sign-up" href="/api/user/signup">
+            회원가입
+        </a>
+        <div class="login-id-label">아이디</div>
+        <input id="userId" type="text" name="userId" class="login-input-box">
+
+        <div class="login-id-label">비밀번호</div>
+        <input id="password" type="password" name="password" class="login-input-box">
+        <button id="login-id-submit" onclick="login()">로그인</button>
+    </div>
+</div>
+</body>
+</html>
