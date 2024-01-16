@@ -24,7 +24,7 @@ public class User extends TimeStamped {
 //    private String email;
 
     @Column(nullable = false)
-    private String userId;
+    private String username;
 
     @Column(nullable = false)
     private String password;
@@ -43,9 +43,9 @@ public class User extends TimeStamped {
 //        this.password = password;
 //    }
 
-    public User (String nickname, String userId, String password, UserRoleEnum role) {
+    public User (String nickname, String username, String password, UserRoleEnum role) {
         this.nickname = nickname;
-        this.userId = userId;
+        this.username = username;
         this.password = password;
         this.role = role;
     }

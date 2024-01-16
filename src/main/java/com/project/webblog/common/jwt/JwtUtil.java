@@ -1,8 +1,7 @@
 package com.project.webblog.common.jwt;
 
-
-import com.sparta.myselectshop.entity.UserRoleEnum;
-import com.sparta.myselectshop.security.UserDetailsServiceImpl;
+import com.project.webblog.user.entity.UserRoleEnum;
+import com.project.webblog.user.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
@@ -25,7 +24,6 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-
     private final UserDetailsServiceImpl userDetailsService;
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_KEY = "auth";

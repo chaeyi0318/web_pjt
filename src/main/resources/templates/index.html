@@ -9,14 +9,19 @@
     const href = location.href;
     const queryString = href.substring(href.indexOf("?") + 1)
 
+    if (queryString === 'error') {
+        const errorDiv = document.getElementById('login-failed');
+        errorDiv.style.display = 'block';
+    }
+
     function login() {
-        let userId = $('#userId').val();
+        let username = $('#username').val();
         let password = $('#password').val();
 
-        if (userId == ' ') {
+        if (username == '') {
             alert('Id를 입력해주세요');
             return;
-        } else if (password == ' ') {
+        } else if (password == '') {
             alert('비밀번호를 입력해주세요');
             return;
         }
@@ -25,10 +30,10 @@
             type: "POST",
             url: `/api/user/login`,
             contentType: "application/json",
-            data: JSON.stringify({userId: userId, password: password}),
+            data: JSON.stringify({username: username, password: password}),
             success: function (response, status, xhr) {
                 if (response === 'success') {
-                    let his = window.location.host;
+                    let host = window.location.host;
                     let url = host + '/api/main';
 
                     document.cookie = 'Authorization' + '=' + xhr.getResponseHeader('Authorization') + ';path=/';
@@ -48,7 +53,7 @@
             회원가입
         </a>
         <div class="login-id-label">아이디</div>
-        <input id="userId" type="text" name="userId" class="login-input-box">
+        <input id="username" type="text" name="username" class="login-input-box">
 
         <div class="login-id-label">비밀번호</div>
         <input id="password" type="password" name="password" class="login-input-box">
