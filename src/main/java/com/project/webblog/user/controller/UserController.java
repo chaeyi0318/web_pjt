@@ -7,6 +7,7 @@ import com.project.webblog.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입")
-    public ApiResponse<UserResponseDto> signup(@RequestBody SignupRequestDto requestDto) {
-        return ApiResponse.success(HttpStatus.CREATED, userService.signup(requestDto));
+    public ResponseEntity<ApiResponse> signup(@RequestBody SignupRequestDto requestDto) {
+        return userService.signup(requestDto);
     }
 }

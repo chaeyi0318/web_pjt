@@ -1,6 +1,8 @@
 package com.project.webblog.user.service;
 
-import com.project.webblog.common.exception.ErrorMessage;
+import com.project.webblog.common.exception.ApiResponse;
+import com.project.webblog.common.exception.ExceptionMessageEnum;
+import com.project.webblog.common.exception.SuccessMessageEnum;
 import com.project.webblog.common.jwt.JwtUtil;
 import com.project.webblog.user.dto.LoginRequestDto;
 import com.project.webblog.user.dto.SignupRequestDto;
@@ -8,20 +10,23 @@ import com.project.webblog.user.dto.UserResponseDto;
 import com.project.webblog.user.entity.User;
 import com.project.webblog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.lang.model.type.ErrorType;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
+
+import static com.project.webblog.common.exception.ExceptionMessageEnum.*;
+import static com.project.webblog.common.exception.SuccessMessageEnum.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public UserResponseDto login(LoginRequestDto userRequestDto, HttpServletResponse servletResponse) {
@@ -41,7 +46,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto signup(SignupRequestDto requestDto) {
+    public ResponseEntity<ApiResponse> signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
         String nickname = requestDto.getNickname();
@@ -49,19 +54,19 @@ public class UserService {
         Optional<User> foundUsername = userRepository.findByUsername(username);
 
         if (foundUsername.isPresent()) {
-            throw new IllegalArgumentException(ErrorMessage.USERNAME_DUPLICATION.getMessage());
+            throw new IllegalArgumentException(USERNAME_DUPLICATION.getMessage());
         }
 
         Optional<User> foundNickname = userRepository.findByNickname(nickname);
 
         if (foundNickname.isPresent()) {
-            throw new IllegalArgumentException(ErrorMessage.NICKNAME_DUPLICATION.getMessage());
+            throw new IllegalArgumentException(NICKNAME_DUPLICATION.getMessage());
         }
 
         User user = new User(requestDto, password);
 
         userRepository.save(user);
 
-        return UserResponseDto.of(user);
+        return ApiResponse.toResponseEntity(SIGN_UP_SUCCESS);
     }
 }
