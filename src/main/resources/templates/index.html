@@ -4,8 +4,95 @@
     <meta charset="UTF-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Blog</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 900;
+        }
+
+        .modal-content {
+            text-align: center;
+        }
+
+        .close {
+            cursor: pointer;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
 </head>
 <script>
+    function openModal() {
+        document.getElementById('myModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('myModal').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    function signup() {
+        let username = $('#username').val();
+        let password = $('#password').val();
+        let nickname = $('#nickname').val();
+
+        if (username == '') {
+            alert('ID를 비워둘 수 없습니다.')
+            return;
+        } else if (password == '') {
+            alert('비밀번호를 비워둘 수 없습니다.')
+            return;
+        } else if (nickname == '') {
+            alert('닉네임을 비워둘 수 없습니다.')
+            return;
+        }
+
+        $.ajax({
+            type:"POST",
+            url:`/api/user/signup`,
+            contentType:"application/json",
+            data:JSON.stringify({username:username, password:password, nickname, nickname}),
+            // success:function (response, status,xhr) {
+            //     if (response === 'success') {
+            //         let host = window.location.host;
+            //         let url = host + 'localhost:8080';
+            //
+            //         document.cookie = 'Authorization' + '=' + xhr.getResponseHeader('Authorization') + ';path=/';
+            //         window.location.href = 'http://' + url;
+            //     }
+            // }
+        })
+
+        alert('회원가입이 완료되었습니다.');
+
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('nickname').value = '';
+
+        closeModal();
+    }
+
+
     const href = location.href;
     const queryString = href.substring(href.indexOf("?") + 1)
 
@@ -15,8 +102,8 @@
     }
 
     function login() {
-        let username = $('#username').val();
-        let password = $('#password').val();
+        let username = $('#login-username').val();
+        let password = $('#login-password').val();
 
         if (username == '') {
             alert('Id를 입력해주세요');
@@ -32,15 +119,15 @@
             contentType: "application/json",
             data: JSON.stringify({username: username, password: password}),
             success: function (response, status, xhr) {
-                if (response === 'success') {
+                if (xhr.status === 200) {
                     let host = window.location.host;
-                    let url = host + '/api/main';
-
+                    let url = host + '/api/board/main';
                     document.cookie = 'Authorization' + '=' + xhr.getResponseHeader('Authorization') + ';path=/';
                     window.location.href = 'http://' + url;
                 } else {
                     alert('로그인에 실패하였습니다.')
-                    window.location.reload();
+                    console.log(response);
+                    // window.location.reload();
                 }
             }
         })
@@ -49,15 +136,52 @@
 <body>
 <div class="header" style="position: relative">
     <div id="login-false">
-        <a id="sign-up" href="/api/user/signup">
-            회원가입
-        </a>
+        <button onclick="openModal()">회원가입</button>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>회원가입</h3>
+
+                <label for="username">아이디 : </label>
+                <input type="text" id="username" name="username"><br>
+
+                <label for="password">비밀번호 : </label>
+                <input type="password" id="password" name="password"><br>
+
+                <label for="password">닉네임 : </label>
+                <input type="password" id="nickname" name="nickname"><br>
+
+                <button onclick="signup()">가입하기</button>
+            </div>
+        </div>
         <div class="login-id-label">아이디</div>
-        <input id="username" type="text" name="username" class="login-input-box">
+        <input id="login-username" type="text" name="login-username" class="login-input-box">
 
         <div class="login-id-label">비밀번호</div>
-        <input id="password" type="password" name="password" class="login-input-box">
+        <input id="login-password" type="password" name="login-password" class="login-input-box">
         <button id="login-id-submit" onclick="login()">로그인</button>
+    </div>
+    <div id="board-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>게시일</th>
+                    <th>추천수</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>1</th>
+                    <th>제목입니다</th>
+                    <th>작성자입니다</th>
+                    <th>2024.01.29</th>
+                    <th>500000</th>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 </body>

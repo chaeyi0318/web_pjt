@@ -28,8 +28,8 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public UserResponseDto login(LoginRequestDto userRequestDto, HttpServletResponse servletResponse) {
+    @Transactional
+    public ResponseEntity<ApiResponse> login(LoginRequestDto userRequestDto, HttpServletResponse response) {
         String username = userRequestDto.getUsername();
         String password = userRequestDto.getPassword();
 
@@ -41,8 +41,10 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        servletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
-        return null;
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
+
+        UserResponseDto responseDto = new UserResponseDto(user.getId(), username, user.getNickname());
+        return ApiResponse.toResponseEntity(LOGIN_SUCCESS, responseDto);
     }
 
     @Transactional
