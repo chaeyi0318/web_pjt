@@ -28,7 +28,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ResponseEntity<ApiResponse> login(LoginRequestDto userRequestDto, HttpServletResponse response) {
         String username = userRequestDto.getUsername();
         String password = userRequestDto.getPassword();

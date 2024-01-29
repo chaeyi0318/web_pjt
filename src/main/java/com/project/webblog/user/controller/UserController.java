@@ -22,20 +22,15 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/signup")
-    public ModelAndView mainPage() {
-        return new ModelAndView("signup");
-    }
-
     @PostMapping("/signup")
     @Operation(summary = "회원가입")
-    public ResponseEntity<ApiResponse> signup(SignupRequestDto requestDto) {
+    public ResponseEntity<ApiResponse> signup(@RequestBody SignupRequestDto requestDto) {
         return userService.signup(requestDto);
     }
 
     @PostMapping("/login")
     @Operation(summary = "로그인")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto requestDto, @Parameter(hidden = true)HttpServletResponse response) {
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequestDto requestDto, @Parameter(hidden = true) HttpServletResponse response) {
         return userService.login(requestDto,response);
     }
 }
