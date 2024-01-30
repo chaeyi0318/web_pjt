@@ -1,6 +1,7 @@
 package com.project.webblog.post.entity;
 
 import com.project.webblog.common.entity.TimeStamped;
+import com.project.webblog.post.dto.BoardRequestDto;
 import com.project.webblog.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,9 +32,9 @@ public class Post extends TimeStamped {
     @ManyToOne
     private User user;
 
-    public Post (String title, String content, User user) {
-        this.title = title;
-        this.content = content;
+    public Post (BoardRequestDto requestDto, User user) {
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContents();
         this.user = user;
     }
 }
