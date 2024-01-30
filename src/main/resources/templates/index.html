@@ -51,6 +51,51 @@
         document.getElementById('overlay').style.display = 'none';
     }
 
+    function  getToken() {
+        let cName = 'Authorization' + '=';
+        let cookieData = document.cookie;
+        let cookie = cookieData.indexOf('Authorization');
+        let auth = '';
+        if(cookie !== -1){
+            cookie += cName.length;
+            let end = cookieData.indexOf(';', cookie);
+            if(end === -1)end = cookieData.length;
+            auth = cookieData.substring(cookie, end);
+        }
+        return auth;
+    }
+
+    $(document).ready(function () {
+        const auth = getToken();
+
+        if (auth !== '') {
+            $.ajax({
+                type:'GET',
+                url:`/api/user/info`,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", auth);
+                },
+                success: function (response) {
+                    if (response === 'fail') {
+                        logout();
+                        window.location.reload();
+                    } else {
+                        $('#usernamePlaceholder').text(response);
+                    }
+                },
+                error(error, status, request) {
+                    console.error(error);
+                    logout();
+                }
+            })
+            $('#login-true').show();
+            $('#login-false').hide();
+        } else {
+            $('#login-false').show();
+            $('#login-true').hide();
+        }
+    })
+
     function signup() {
         let username = $('#username').val();
         let password = $('#password').val();
@@ -124,13 +169,21 @@
                     let url = host + '/api/board/main';
                     document.cookie = 'Authorization' + '=' + xhr.getResponseHeader('Authorization') + ';path=/';
                     window.location.href = 'http://' + url;
-                } else {
-                    alert('로그인에 실패하였습니다.')
-                    console.log(response);
-                    // window.location.reload();
                 }
+            },
+            error: function () {
+                alert('아이디와 비밀번호를 확인해주세요');
+                window.location.reload();
             }
         })
+    }
+
+    function logout(check) {
+        document.cookie =
+            'Authorization' + '=' + '' + ';path=/';
+        if(check) {
+            window.location.reload();
+        }
     }
 </script>
 <body>
@@ -160,6 +213,15 @@
         <div class="login-id-label">비밀번호</div>
         <input id="login-password" type="password" name="login-password" class="login-input-box">
         <button id="login-id-submit" onclick="login()">로그인</button>
+    </div>
+    <div id="login-true">
+        <div id="header-title-login-user">
+            <span id="usernamePlaceholder"></span> 님으로 로그인 했습니다.
+<!--            <a id="login-text" href=logout('check')>-->
+<!--                로그아웃-->
+<!--            </a>-->
+            <button onclick="logout('check')">로그아웃</button>
+        </div>
     </div>
     <div id="board-list">
         <table>
