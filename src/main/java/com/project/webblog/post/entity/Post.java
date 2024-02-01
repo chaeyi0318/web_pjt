@@ -26,6 +26,9 @@ public class Post extends TimeStamped {
     @Column(nullable = false)
     private String content;
 
+    @Column
+    private Long likeCount;
+
     @Column(nullable = false)
     private boolean isDeleted = false;
 

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/board")
@@ -27,5 +29,11 @@ public class BoardController {
     @Operation(summary = "게시글 작성")
     public ResponseEntity<ApiResponse> createBoard(@RequestBody BoardRequestDto requestDto, @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return boardService.createBoard(requestDto, userDetails.getUser());
+    }
+
+    @PostMapping("/like-board")
+    @Operation(summary = "게시글 좋아요")
+    public ResponseEntity<ApiResponse> likePost(@PathVariable Long boardId) {
+        return boardService.likePost(boardId);
     }
 }
