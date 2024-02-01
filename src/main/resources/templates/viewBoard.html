@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 보기</title>
+</head>
+<script>
+    function likeBoard() {
+        $.ajax({
+            type: 'POST',
+            url: `/api/board/like-board`,
+            contentType: "application/json",
+            data: JSON.stringify({boardId:boardId}),
+            success: function (response) {
+                if (response === 'success') {
+
+                }
+            }
+        })
+    }
+</script>
+<body>
+  <button onclick="likeBoard()">❤️</button>
+</body>
+</html>
