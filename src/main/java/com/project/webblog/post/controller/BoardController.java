@@ -1,6 +1,5 @@
 package com.project.webblog.post.controller;
 
-import com.project.webblog.common.exception.ApiResponse;
 import com.project.webblog.post.dto.BoardRequestDto;
 import com.project.webblog.post.service.BoardService;
 import com.project.webblog.user.security.UserDetailsImpl;
@@ -12,8 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Controller
 @RequiredArgsConstructor

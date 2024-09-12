@@ -1,6 +1,5 @@
 package com.project.webblog.user.controller;
 
-import com.project.webblog.common.exception.ApiResponse;
 import com.project.webblog.user.dto.LoginRequestDto;
 import com.project.webblog.user.dto.SignupRequestDto;
 import com.project.webblog.user.security.UserDetailsImpl;

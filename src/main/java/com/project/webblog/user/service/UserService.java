@@ -1,6 +1,5 @@
 package com.project.webblog.user.service;
 
-import com.project.webblog.common.exception.ApiResponse;
 import com.project.webblog.common.jwt.JwtUtil;
 import com.project.webblog.user.dto.LoginRequestDto;
 import com.project.webblog.user.dto.SignupRequestDto;
@@ -16,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
-import static com.project.webblog.common.exception.ExceptionMessageEnum.*;
+import static com.project.webblog.common.exception.ExceptionEnum.*;
 import static com.project.webblog.common.exception.SuccessMessageEnum.*;
 
 @Service
