@@ -3,9 +3,11 @@ package com.project.partyparty.user.entity;
 import com.project.partyparty.common.entity.TimeStamped;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity(name = "users")
+@NoArgsConstructor
 public class User extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

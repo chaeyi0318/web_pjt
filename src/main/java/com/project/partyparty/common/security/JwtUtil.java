@@ -24,13 +24,11 @@ import java.util.Date;
 public class JwtUtil {
     private final UserDetailsServiceImpl userDetailsService;
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
+    @Value("${jwt.access-token.expiretime}")
+    private long accessTokenExpireTime;
 
-    public static final String AUTHORIZATION_KEY = "auth";
-
-    private static final String BEARER_PREFIX = "Bearer ";
-
-    private static final long TOKEN_TIME = 30 * 60 * 1000L;
+    @Value("${jwt.refresh-token.expiretime}")
+    private long refreshTokenExpireTime;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -44,42 +42,41 @@ public class JwtUtil {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
         return null;
     }
 
-    public String createToken(String username, UserRoleEnum role) {
-        Date date = new Date();
-
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(username)
-                        .claim(AUTHORIZATION_KEY, role)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date)
-                        .signWith(key, signatureAlgorithm)
-                        .compact();
+    public String resolveRefreshToken(HttpServletRequest request) {
+        return request.getHeader("Refresh-Token");
     }
 
-    public boolean validateToken(String token) throws RuntimeException {
+    public String generateToken(String username, long expireTime) {
+        Date now = new Date();
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expireTime))
+                .signWith(key, signatureAlgorithm)
+                .compact();
+    }
+
+    public String generateAccessToken(String username) {
+        return generateToken(username, accessTokenExpireTime);
+    }
+
+    public String generateRefreshToken(String username) {
+        return generateToken(username, refreshTokenExpireTime);
+    }
+
+    public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-            throw new UsernameFromTokenException("INVALID_TOKEN");
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT token, 만료된 JWT token 입니다.");
-            throw new UsernameFromTokenException("MISMATCH_REFRESH_TOKEN");
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
-            throw new UsernameFromTokenException("UNSUPPORTED_TOKEN");
-        } catch (IllegalArgumentException | SignatureException e) {
-            log.info("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
-            throw new UsernameFromTokenException("ILLEAGAL_TOKEN");
+        } catch (SecurityException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            return false;
         }
     }
 
@@ -92,7 +89,14 @@ public class JwtUtil {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
-
+    public String refreshAccessToken(String refreshToken) {
+        if (validateToken(refreshToken)) {
+            Claims claims = getUserInfoFromToken(refreshToken);
+            String username = claims.getSubject();
+            return generateAccessToken(username);
+        }
+        throw new RuntimeException("Invalid refresh token");
+    }
 }
 
 class UsernameFromTokenException extends RuntimeException {
