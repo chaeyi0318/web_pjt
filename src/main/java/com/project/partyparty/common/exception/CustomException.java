@@ -1,7 +1,10 @@
 package com.project.partyparty.common.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class CustomException extends IllegalArgumentException {
-    public CustomException(String s) {
-        super(s);
-    }
+    private final ExceptionMessage exceptionMessage;
 }

@@ -1,6 +1,7 @@
 package com.project.partyparty.user.service;
 
 import ch.qos.logback.classic.encoder.JsonEncoder;
+import com.project.partyparty.common.exception.ExceptionMessage;
 import com.project.partyparty.common.exception.Message;
 import com.project.partyparty.common.exception.SuccessMessage;
 import com.project.partyparty.common.security.JwtUtil;
@@ -40,11 +41,11 @@ public class UserService {
     @Transactional
     public ResponseEntity<Message> signup(SignupRequestDto signupRequestDto) {
         if (userRepository.existsByUsername(signupRequestDto.getUsername())) {
-            throw new IllegalArgumentException("username is already in use");
+            throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_USERNAME.getDetail());
         }
 
         if (userRepository.existsByEmail(signupRequestDto.getEmail())) {
-            throw new IllegalArgumentException("email is already in use");
+            throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_EMAIL.getDetail());
         }
 
         String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
