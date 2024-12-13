@@ -1,6 +1,7 @@
 package com.project.partyparty.user.service;
 
 import ch.qos.logback.classic.encoder.JsonEncoder;
+import com.project.partyparty.common.exception.ExceptionMessage;
 import com.project.partyparty.common.exception.Message;
 import com.project.partyparty.common.exception.SuccessMessage;
 import com.project.partyparty.common.security.JwtUtil;
@@ -14,11 +15,14 @@ import com.project.partyparty.user.entity.User;
 import com.project.partyparty.user.entity.UserRoleEnum;
 import com.project.partyparty.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,16 +37,15 @@ public class UserService {
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private UserRoleEnum userRole;
 
     @Transactional
     public ResponseEntity<Message> signup(SignupRequestDto signupRequestDto) {
         if (userRepository.existsByUsername(signupRequestDto.getUsername())) {
-            throw new IllegalArgumentException("username is already in use");
+            throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_USERNAME.getDetail());
         }
 
         if (userRepository.existsByEmail(signupRequestDto.getEmail())) {
-            throw new IllegalArgumentException("email is already in use");
+            throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_EMAIL.getDetail());
         }
 
         String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
@@ -53,7 +56,7 @@ public class UserService {
                 .nickname(signupRequestDto.getNickname())
                 .password(encodedPassword)
                 .profileImage(signupRequestDto.getProfileImage())
-                .role(userRole.USER)
+                .role(UserRoleEnum.USER)
                 .build();
 
         User savedUser = userRepository.save(newUser);
@@ -70,20 +73,7 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<Message> login(LoginRequestDto loginRequestDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword())
-        );
-
-        User user = userRepository.findByUsername(loginRequestDto.getUsername()).orElseThrow();
-
-        String username = authentication.getName();
-        String accessToken = jwtUtil.generateAccessToken(username);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(username);
-
-        LoginResponseDto loginResponseDto = new LoginResponseDto(user.getId(), user.getUsername(), user.getProfileImage(), accessToken, refreshToken.getToken());
-
-        SuccessMessage successMessage = new SuccessMessage(HttpStatus.OK, "로그인 성공");
-        return Message.toResponseEntity(successMessage, loginResponseDto);
+        return null;
     }
 
     public void logout(String username) {

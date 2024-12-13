@@ -1,7 +1,10 @@
 package com.project.partyparty.common.exception;
 
-public class CustomException extends RuntimeException {
-    public CustomException(String message) {
-        super(message);
-    }
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class CustomException extends IllegalArgumentException {
+    private final ExceptionMessage exceptionMessage;
 }
