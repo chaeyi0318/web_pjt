@@ -23,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +74,12 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<Message> login(LoginRequestDto loginRequestDto) {
+        String username = loginRequestDto.getUsername();
+        String password = loginRequestDto.getPassword();
+
+        userRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException(ExceptionMessage.USER_NOT_FOUND.getDetail())
+        );
         return null;
     }
 

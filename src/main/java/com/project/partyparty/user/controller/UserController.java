@@ -34,7 +34,6 @@ public class UserController {
     @PostMapping("/login")
     @Operation(summary = "로그안", description = "로그인")
     public ResponseEntity<Message> login(@RequestBody LoginRequestDto loginRequestDto, @Parameter(hidden = true) HttpServletResponse response) {
-        System.out.println("여기!!!");
         return userService.login(loginRequestDto);
     }
 }

@@ -29,6 +29,9 @@ public class User extends TimeStamped {
     @Column(nullable = true)
     private String profileImage;
 
+    @Column(nullable = true)
+    private String phoneNumber;
+
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
